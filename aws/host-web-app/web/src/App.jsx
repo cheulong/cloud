@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { secret } from '@aws-amplify/backend';
 
 import "./App.css";
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
@@ -7,8 +8,8 @@ import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 const dynamoDBClient = new DynamoDBClient({
   region: "ap-southeast-1", // Replace with your desired AWS region
   credentials: {
-    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    accessKeyId: secret('VITE_AWS_ACCESS_KEY_ID'),
+    secretAccessKey: secret('VITE_AWS_SECRET_ACCESS_KEY'),
   },
 });
 
