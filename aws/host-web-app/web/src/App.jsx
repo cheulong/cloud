@@ -69,7 +69,7 @@ function App() {
       <div>
         <h2>Result History</h2>
         <ul>
-          {history.Items.length > 0 &&
+          {history?.Items?.length > 0 &&
             history.Items.map((item, index) => (
               <div
                 key={index}
