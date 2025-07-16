@@ -1,17 +1,5 @@
-import { useEffect, useState } from "react";
-import { secret } from '@aws-amplify/backend-secret';
-
+import { useState } from "react";
 import "./App.css";
-import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
-
-// Initialize DynamoDB client
-const dynamoDBClient = new DynamoDBClient({
-  region: "ap-southeast-1", // Replace with your desired AWS region
-  credentials: {
-    accessKeyId: secret('VITE_AWS_ACCESS_KEY_ID'),
-    secretAccessKey: secret('VITE_AWS_SECRET_ACCESS_KEY'),
-  },
-});
 
 function App() {
   const [num1, setNum1] = useState(0);
@@ -37,25 +25,12 @@ function App() {
         console.log("Result:", data);
 
         setResult(data.result);
-        getItem();
+        setHistory(JSON.parse(data.history));
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
-  useEffect(() => {
-    getItem();
-  }, []);
-  const getItem = async () => {
-    const input = {
-      TableName: "CalculatorDB",
-    };
-    const data = await dynamoDBClient.send(new ScanCommand(input));
-    setHistory(data.Items);
-    console.log("Success - item retrieved", data);
-    return data.Items;
-  };
-  console.log({ history });
 
   return (
     <>
@@ -94,8 +69,8 @@ function App() {
       <div>
         <h2>Result History</h2>
         <ul>
-          {history.length > 0 &&
-            history.map((item, index) => (
+          {history.Items.length > 0 &&
+            history.Items.map((item, index) => (
               <div
                 key={index}
                 style={{
