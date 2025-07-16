@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { secret } from '@aws-amplify/backend';
+import { secret } from '@aws-amplify/backend-secret';
 
 import "./App.css";
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";

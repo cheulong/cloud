@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aws-amplify/backend": "^1.16.1",
+    "@aws-amplify/backend-secret": "^1.4.0",
     "@aws-sdk/client-dynamodb": "^3.844.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
