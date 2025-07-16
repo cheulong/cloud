@@ -1,16 +1,26 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect, useState } from "react";
+
 import "./App.css";
+import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
+
+// Initialize DynamoDB client
+const dynamoDBClient = new DynamoDBClient({
+  region: "ap-southeast-1", // Replace with your desired AWS region
+  credentials: {
+    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 function App() {
   const [num1, setNum1] = useState(0);
   const [num2, setNum2] = useState(0);
-  const [symbol, setSymbol] = useState(0);
+  const [symbol, setSymbol] = useState("+");
   const [result, setResult] = useState(null);
+  const [history, setHistory] = useState([]);
 
   const calculateResult = () => {
-    fetch("https://ev9tkniko9.execute-api.ap-southeast-1.amazonaws.com/dev", {
+    fetch(import.meta.env.VITE_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -23,9 +33,28 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("Result:", data);
+
         setResult(data.result);
+        getItem();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
       });
   };
+  useEffect(() => {
+    getItem();
+  }, []);
+  const getItem = async () => {
+    const input = {
+      TableName: "CalculatorDB",
+    };
+    const data = await dynamoDBClient.send(new ScanCommand(input));
+    setHistory(data.Items);
+    console.log("Success - item retrieved", data);
+    return data.Items;
+  };
+  console.log({ history });
 
   return (
     <>
@@ -60,6 +89,26 @@ function App() {
       </div>
       <div className="card">
         <button onClick={calculateResult}>Calculate</button>
+      </div>
+      <div>
+        <h2>Result History</h2>
+        <ul>
+          {history.length > 0 &&
+            history.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "10px",
+                  justifyContent: "space-around",
+                }}
+              >
+                <p>{item["ID"].S}</p>
+                <p> {item["Result"].S}</p>
+              </div>
+            ))}
+        </ul>
       </div>
     </>
   );
